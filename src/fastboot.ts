@@ -2,7 +2,7 @@ import * as Sparse from "./sparse";
 import * as common from "./common";
 import { FastbootError, UsbError } from "./errors";
 import {
-    FactoryProgressCallback,
+    type FactoryProgressCallback,
     flashZip as flashFactoryZip,
 } from "./factory";
 

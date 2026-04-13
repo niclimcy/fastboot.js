@@ -1,14 +1,14 @@
 import * as common from "./common";
 import { FastbootError } from "./errors";
 import {
+    type Entry,
+    type GetDataOptions,
+    type ZipReaderOptions,
     ZipReader,
     BlobReader,
     BlobWriter,
     TextWriter,
-    Entry,
     Writer,
-    GetDataOptions,
-    ZipReaderOptions,
 } from "@zip.js/zip.js";
 import type { FastbootDevice, ReconnectCallback } from "./fastboot";
 

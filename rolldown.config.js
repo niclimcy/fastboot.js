@@ -1,9 +1,8 @@
-import { terser } from "rollup-plugin-terser";
-import { nodeResolve } from "@rollup/plugin-node-resolve";
-import typescript from "@rollup/plugin-typescript";
+import { defineConfig } from "rolldown";
 
-export default {
+export default defineConfig({
     input: "src/index.ts",
+    tsconfig: "./tsconfig.json",
     output: [
         {
             file: "dist/fastboot.cjs",
@@ -12,21 +11,26 @@ export default {
         },
         {
             file: "dist/fastboot.mjs",
-            format: "es",
+            format: "esm",
             sourcemap: true,
         },
         {
             file: "dist/fastboot.min.cjs",
             format: "cjs",
             sourcemap: true,
-            plugins: [terser()],
+            minify: {
+                compress: true,
+                mangle: true,
+            },
         },
         {
             file: "dist/fastboot.min.mjs",
-            format: "es",
+            format: "esm",
             sourcemap: true,
-            plugins: [terser()],
+            minify: {
+                compress: true,
+                mangle: true,
+            },
         },
     ],
-    plugins: [nodeResolve(), typescript()],
-};
+});
