@@ -2,13 +2,12 @@ import * as common from "./common";
 import { FastbootError } from "./errors";
 import {
     type Entry,
-    type GetDataOptions,
-    type ZipReaderOptions,
+    type FileEntry,
+    type EntryGetDataOptions,
     ZipReader,
     BlobReader,
     BlobWriter,
     TextWriter,
-    Writer,
 } from "@zip.js/zip.js";
 import type { FastbootDevice, ReconnectCallback } from "./fastboot";
 
@@ -70,13 +69,13 @@ const FASTBOOTD_REBOOT_TIME = 16000; // ms
 const USERDATA_ERASE_TIME = 1000; // ms
 
 // Wrapper for Entry#getData() that unwraps ProgressEvent errors
-async function zipGetData(
-    entry: Entry,
-    writer: Writer,
-    options?: GetDataOptions | ZipReaderOptions
+async function zipGetData<T>(
+    entry: FileEntry,
+    writer: BlobWriter | TextWriter,
+    options?: EntryGetDataOptions,
 ) {
     try {
-        return await entry.getData!(writer, options);
+        return await entry.getData<T>(writer, options);
     } catch (e) {
         if (
             e instanceof ProgressEvent &&
@@ -90,16 +89,20 @@ async function zipGetData(
     }
 }
 
+function isFileEntry(entry: Entry): entry is FileEntry {
+    return !entry.directory;
+}
+
 async function flashEntryBlob(
     device: FastbootDevice,
-    entry: Entry,
+    entry: FileEntry,
     onProgress: FactoryProgressCallback,
     partition: string,
     slot: string = "current"
 ) {
     common.logDebug(`Unpacking ${partition}`);
     onProgress("unpack", partition, 0.0);
-    let blob = await zipGetData(
+    let blob = await zipGetData<Blob>(
         entry,
         new BlobWriter("application/octet-stream"),
         {
@@ -118,7 +121,7 @@ async function flashEntryBlob(
 
 async function tryFlashImages(
     device: FastbootDevice,
-    entries: Array<Entry>,
+    entries: Array<FileEntry>,
     onProgress: FactoryProgressCallback,
     imageNames: Array<string>,
     slot: string = "current",
@@ -229,7 +232,7 @@ export async function flashZip(
 ) {
     onProgress("load", "package", 0.0);
     let reader = new ZipReader(new BlobReader(blob));
-    let entries = await reader.getEntries();
+    let entries = (await reader.getEntries()).filter(isFileEntry);
 
     // Ensure AVB custom key exists as expected.
     let avbCustomKeyEntry = entries.find((e) => e.filename.endsWith("avb_custom_key.img"));
@@ -289,8 +292,8 @@ export async function flashZip(
     // Load nested images for the following steps
     common.logDebug("Loading nested images from zip");
     onProgress("unpack", "images", 0.0);
-    let entry = entries.find((e) => e.filename.match(/image-.+\.zip$/));
-    let imagesBlob = await zipGetData(
+    let entry: FileEntry | undefined = entries.find((e) => e.filename.match(/image-.+\.zip$/));
+    let imagesBlob = await zipGetData<Blob>(
         entry!,
         new BlobWriter("application/zip"),
         {
@@ -300,7 +303,7 @@ export async function flashZip(
         }
     );
     let imageReader = new ZipReader(new BlobReader(imagesBlob));
-    let imageEntries = await imageReader.getEntries();
+    let imageEntries = (await imageReader.getEntries()).filter(isFileEntry);
 
     // 3. Custom AVB key
     await device.runCommand("erase:avb_custom_key");
@@ -309,7 +312,7 @@ export async function flashZip(
     // 4. Check requirements
     entry = imageEntries.find((e) => e.filename === "android-info.txt");
     if (entry !== undefined) {
-        let reqText = await zipGetData(entry, new TextWriter());
+        let reqText = await zipGetData<string>(entry, new TextWriter());
         await checkRequirements(device, reqText);
     }
 
@@ -340,7 +343,7 @@ export async function flashZip(
 
         let superAction = wipe ? "wipe" : "flash";
         onProgress(superAction, "super", 0.0);
-        let superBlob = await zipGetData(
+        let superBlob = await zipGetData<Blob>(
             entry,
             new BlobWriter("application/octet-stream")
         );
