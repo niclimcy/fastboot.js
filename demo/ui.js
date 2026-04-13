@@ -121,12 +121,6 @@ async function flashDownloadedFactoryZip() {
     await flashFactoryZip(blob);
 }
 
-fastboot.configureZip({
-    workerScripts: {
-        inflate: ["../dist/vendor/z-worker-pako.js", "pako_inflate.min.js"],
-    },
-});
-
 document
     .querySelector(".command-form")
     .addEventListener("submit", sendFormCommand);
