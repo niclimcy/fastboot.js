@@ -18,9 +18,11 @@
         "eslint-config-prettier": "^10.1.8",
         "prettier": "^3.8.2",
         "rollup": "^4.60.1",
+        "typedoc": "^0.28.19",
         "typescript": "^6.0.2"
     },
     "scripts": {
+        "doc": "typedoc src/index.ts",
         "build": "rollup -c && tsc"
     },
     "files": [

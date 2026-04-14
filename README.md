@@ -44,4 +44,4 @@ There is also a [user-friendly ROM installer](https://github.com/kdrag0n/android
 
 ## Documentation
 
-Documentation generated from JSDoc comments are WIP.
+Documentation generated using TypeDoc can be found [here](https://lineageos-infra.github.io/fastboot.js/).
