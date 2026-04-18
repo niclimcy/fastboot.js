@@ -1,4 +1,4 @@
-import { FactoryProgressCallback } from "./factory";
+import { type FactoryProgressCallback } from "./factory";
 interface CommandResponse {
     text: string;
     dataSize?: string;
