@@ -1,15 +1,8 @@
-import { type FactoryProgressCallback } from "./factory";
+import { type FactoryProgressCallback, type FlashProgressCallback } from "./utils/progress";
 interface CommandResponse {
     text: string;
     dataSize?: string;
 }
-/**
- * Callback for progress updates while flashing or uploading an image.
- *
- * @callback FlashProgressCallback
- * @param {number} progress - Progress for the current action, between 0 and 1.
- */
-export type FlashProgressCallback = (progress: number) => void;
 /**
  * Callback for reconnecting to the USB device.
  * This is necessary because some platforms do not support automatic reconnection,
