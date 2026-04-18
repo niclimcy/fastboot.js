@@ -1,4 +1,4 @@
-import { FactoryProgressCallback } from "./factory";
+import { type FactoryProgressCallback } from "./factory";
 export declare enum DebugLevel {
     Silent = 0,
     Debug = 1,
