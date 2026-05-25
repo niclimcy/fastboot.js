@@ -26,14 +26,14 @@ Detailed progress callbacks are also provided for many flashing steps.
 
 ## Installation
 
-This library is available as a [package](https://www.npmjs.com/package/android-fastboot) on npm, so you can easily add it to your project:
+This library is available as a [package](https://www.npmjs.com/package/@lineageos-infra/android-fastboot) on npm, so you can easily add it to your project:
 
 ```bash
 # Using npm
-npm install --save android-fastboot
+npm install --save @lineageos-infra/android-fastboot
 
 # Using yarn
-yarn add android-fastboot
+yarn add @lineageos-infra/android-fastboot
 ```
 
 ## Examples
